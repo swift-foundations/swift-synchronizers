@@ -1,0 +1,8 @@
+# .github/metadata.yaml
+description: "Synchronization primitives for Swift."
+topics:
+  - foundations
+  - synchronization
+homepage: "https://swift-institute.org"
+readme:
+  family: E
