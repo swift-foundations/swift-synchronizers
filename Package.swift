@@ -28,7 +28,7 @@ let package = Package(
         .library(name: "Synchronizers Test Support", targets: ["Synchronizers Test Support"]),
     ],
     dependencies: [
-        .package(path: "../swift-kernel"),
+        .package(url: "https://github.com/swift-foundations/swift-kernel.git", branch: "main"),
     ],
     targets: [
         // MARK: - Namespace
