@@ -83,7 +83,10 @@ extension Synchronizer.Blocking {
     /// - Returns: Number of threads currently waiting on this condition.
     /// - Precondition: Index must be in range 0..<N.
     public func waiters(condition: Int = 0) -> Int {
-        precondition(condition >= 0 && condition < N, "Condition index \(condition) out of bounds (0..<\(N))")
+        precondition(
+            condition >= 0 && condition < N,
+            "Condition index \(condition) out of bounds (0..<\(N))"
+        )
         return waiterCounts[condition]
     }
 

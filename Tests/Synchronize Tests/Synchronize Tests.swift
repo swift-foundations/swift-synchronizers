@@ -58,7 +58,10 @@ extension SynchronizeWitnessTests.TypeErasure {
     func `witness preserves return value`() {
         let source = Synchronizer.Blocking<1>()
         let witness = Synchronize(source)
-        struct Pair: Equatable { let a: Int; let b: Int }
+        struct Pair: Equatable {
+            let a: Int
+            let b: Int
+        }
         let result = witness.synchronize { Pair(a: 7, b: 13) }
         #expect(result == Pair(a: 7, b: 13))
     }
