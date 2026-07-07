@@ -57,9 +57,6 @@ extension Synchronizer.Blocking {
         conditions[index].broadcast()
     }
 
-    // Four-part WORKAROUND template verified by hand (all four parts present
-    // below); the rule's regex only detects the marker's presence.
-    // swiftlint:disable:next workaround_marker_present
     // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
     // WHY: Property-primitives not yet a dependency of swift-synchronizers
     // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
@@ -93,9 +90,6 @@ extension Synchronizer.Blocking {
         return waiterCounts[condition]
     }
 
-    // Four-part WORKAROUND template verified by hand (all four parts present
-    // below); the rule's regex only detects the marker's presence.
-    // swiftlint:disable:next workaround_marker_present
     // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
     // WHY: Property-primitives not yet a dependency of swift-synchronizers
     // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
@@ -121,9 +115,6 @@ extension Synchronizer.Blocking {
         conditions[index].wait(mutex: mutex)
     }
 
-    // Four-part WORKAROUND template verified by hand (all four parts present
-    // below); the rule's regex only detects the marker's presence.
-    // swiftlint:disable:next workaround_marker_present
     // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
     // WHY: Property-primitives not yet a dependency of swift-synchronizers
     // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
@@ -152,9 +143,6 @@ extension Synchronizer.Blocking {
         return conditions[index].wait(mutex: mutex, timeout: timeout)
     }
 
-    // Four-part WORKAROUND template verified by hand (all four parts present
-    // below); the rule's regex only detects the marker's presence.
-    // swiftlint:disable:next workaround_marker_present
     // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
     // WHY: Property-primitives not yet a dependency of swift-synchronizers
     // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
@@ -173,9 +161,6 @@ extension Synchronizer.Blocking {
         return true
     }
 
-    // Four-part WORKAROUND template verified by hand (all four parts present
-    // below); the rule's regex only detects the marker's presence.
-    // swiftlint:disable:next workaround_marker_present
     // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
     // WHY: Property-primitives not yet a dependency of swift-synchronizers
     // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
