@@ -13,7 +13,7 @@
 ///
 /// Holds any conforming `Synchronizer.Protocol` value behind a uniform
 /// interface. Use this when you need a value of "a synchronizer" without
-/// committing to a specific concrete type — e.g., when storing heterogeneous
+/// committing to a specific concrete type — for instance, when storing heterogeneous
 /// synchronizers in a collection or when expressing API boundaries that
 /// should accept any synchronizer regardless of variant.
 ///
@@ -39,7 +39,7 @@ public struct Synchronize: Synchronizer.`Protocol`, @unchecked Sendable {
     /// Wraps any Copyable + Escapable conformer (the common case — classes).
     ///
     /// The source is captured by closure-reference. For class conformers
-    /// (e.g., `Synchronizer.Blocking<N>`), this gives correct shared-state
+    /// such as `Synchronizer.Blocking<N>`, this gives correct shared-state
     /// semantics: copies of this witness all drive the same underlying lock.
     @inlinable
     public init(_ source: sending some Synchronizer.`Protocol`) {
@@ -50,7 +50,7 @@ public struct Synchronize: Synchronizer.`Protocol`, @unchecked Sendable {
 
     /// Wraps any noncopyable conformer by consuming it into the witness.
     ///
-    /// For noncopyable struct conformers (e.g., a hypothetical
+    /// For noncopyable struct conformers, such as a hypothetical
     /// `Synchronizer.Spin<N>` holding an atomic flag), `consuming` moves
     /// the source into the closure's capture context.
     @inlinable

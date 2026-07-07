@@ -15,6 +15,6 @@
 /// variants discriminated by wait mechanism. Today the only variant is
 /// `Synchronizer.Blocking<N>` (thread-blocking via kernel mutex + condvars).
 /// The namespace is shaped to grow additional variants as their consumers
-/// materialize — `Synchronizer.Async<N>` (task-suspending), `Synchronizer.Spin<N>`
-/// (atomic-flag spin-wait), etc.
+/// materialize, such as `Synchronizer.Async<N>` (task-suspending) or
+/// `Synchronizer.Spin<N>` (atomic-flag spin-wait).
 public enum Synchronizer {}

@@ -15,10 +15,10 @@ extension Synchronizer {
     /// Conformers expose `synchronize(_:)` — "execute work while holding
     /// exclusive access". This is the universal operation every synchronization
     /// primitive provides, regardless of its backing mechanism (kernel
-    /// mutex+condvar, atomic spin, suspending continuation, etc.).
+    /// mutex+condvar, atomic spin, or suspending continuation).
     ///
-    /// Variant-specific operations (e.g., `wait(condition:)` / `signal(condition:)`
-    /// for condvar-based variants; `tryAcquire()` for spin-based variants)
+    /// Variant-specific operations, such as `wait(condition:)` / `signal(condition:)`
+    /// for condvar-based variants or `tryAcquire()` for spin-based variants,
     /// live on the concrete variant, not on this protocol. The protocol's
     /// purpose is the universal verb; per-variant primitives are accessed
     /// by committing to the concrete type.
