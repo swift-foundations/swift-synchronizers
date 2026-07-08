@@ -16,18 +16,20 @@ extension Synchronizer.Blocking where N == 2 {
         internal let sync: Synchronizer.Blocking<2>
 
         @inlinable
-        init(sync: Synchronizer.Blocking<2>) {
+        package init(sync: Synchronizer.Blocking<2>) {
             self.sync = sync
-        }
-
-        /// Broadcast all conditions.
-        public func all() {
-            sync.broadcastAll()
         }
     }
 
     /// Broadcast all conditions accessor.
     public var broadcast: Broadcast {
         Broadcast(sync: self)
+    }
+}
+
+extension Synchronizer.Blocking.Broadcast {
+    /// Broadcast all conditions.
+    public func all() {
+        sync.broadcastAll()
     }
 }

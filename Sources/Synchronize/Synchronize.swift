@@ -59,7 +59,9 @@ public struct Synchronize: Synchronizer.`Protocol`, @unchecked Sendable {
             source.synchronize { body() }
         }
     }
+}
 
+extension Synchronize {
     @inlinable
     public borrowing func synchronize<R, E: Swift.Error>(
         _ body: () throws(E) -> R

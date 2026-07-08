@@ -31,7 +31,7 @@ extension Synchronizer.Blocking where N == 2 {
         internal let index: Int
 
         @inlinable
-        init(sync: Synchronizer.Blocking<2>, index: Int) {
+        package init(sync: Synchronizer.Blocking<2>, index: Int) {
             self.sync = sync
             self.index = index
         }
