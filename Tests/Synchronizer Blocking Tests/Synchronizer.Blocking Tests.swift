@@ -331,7 +331,7 @@ extension SynchronizerBlockingWaiterTrackingTests.Integration {
         }
 
         let sync = Synchronizer.Blocking<1>()
-        do {
+        do throws(SyncTestError) {
             let _ = try sync.synchronize { () throws(SyncTestError) -> Int in
                 throw .fault
             }

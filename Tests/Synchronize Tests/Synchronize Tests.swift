@@ -72,7 +72,7 @@ extension SynchronizeWitnessTests.TypeErasure {
 
         let source = Synchronizer.Blocking<1>()
         let witness = Synchronize(source)
-        do {
+        do throws(WitnessError) {
             let _ = try witness.synchronize { () throws(WitnessError) -> Int in
                 throw .faulted
             }
