@@ -21,17 +21,17 @@ import Testing
 
 // MARK: - Test Suites for Synchronizer.Blocking Waiter Tracking
 
-@Suite("Synchronizer.Blocking Waiter Tracking")
-struct SynchronizerBlockingWaiterTrackingTests {}
+@Suite
+struct `Synchronizer.Blocking Tests` {}
 
 // MARK: - Unit Tests
 
-extension SynchronizerBlockingWaiterTrackingTests {
+extension `Synchronizer.Blocking Tests` {
     @Suite("Unit")
     struct Unit {}
 }
 
-extension SynchronizerBlockingWaiterTrackingTests.Unit {
+extension `Synchronizer.Blocking Tests`.Unit {
     @Test
     func `waiters starts at zero`() {
         let sync = Synchronizer.Blocking<1>()
@@ -88,7 +88,7 @@ extension SynchronizerBlockingWaiterTrackingTests.Unit {
 
 // MARK: - Integration Tests
 
-extension SynchronizerBlockingWaiterTrackingTests {
+extension `Synchronizer.Blocking Tests` {
     @Suite("Integration")
     struct Integration {}
 }
@@ -102,7 +102,7 @@ private func smallSleep(milliseconds: UInt32) {
     #endif
 }
 
-extension SynchronizerBlockingWaiterTrackingTests.Integration {
+extension `Synchronizer.Blocking Tests`.Integration {
     @Test
     func `waitTracked increments waiters`() throws {
         let sync = Synchronizer.Blocking<1>()

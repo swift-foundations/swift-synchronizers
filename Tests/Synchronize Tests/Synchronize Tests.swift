@@ -15,17 +15,19 @@ import Testing
 
 // MARK: - Test Suites for Synchronize Witness
 
-@Suite("Synchronize Witness")
-struct SynchronizeWitnessTests {}
+extension Synchronize {
+    @Suite("Synchronize Witness")
+    struct Test {}
+}
 
 // MARK: - Type Erasure Tests
 
-extension SynchronizeWitnessTests {
-    @Suite("Type Erasure")
-    struct TypeErasure {}
+extension Synchronize.Test {
+    @Suite
+    struct `Type Erasure` {}
 }
 
-extension SynchronizeWitnessTests.TypeErasure {
+extension Synchronize.Test.`Type Erasure` {
     @Test
     func `wraps Synchronizer.Blocking via default init`() {
         let source = Synchronizer.Blocking<1>()
