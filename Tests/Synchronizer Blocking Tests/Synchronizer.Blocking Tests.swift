@@ -421,3 +421,81 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
         #expect(doc.contains("must be called while holding the lock"))
     }
 }
+
+// F-001 rev-1 regression coverage: `Synchronizer.Blocking.Channel` (the
+// ergonomic worker/deadline accessor for N == 2) re-exposes the entire F-001
+// surface — `waiters`, `waitTracked` (x2), `signalIfWaiters`,
+// `broadcastIfWaiters`, `wait` (x2) — one level up, and historically carried
+// no lock doc contract anywhere on that surface: the same omission class as
+// F-001 itself. Same doc-contract test shape as above, extended to the
+// Channel source file. Members are located by declaration substring (not bare
+// func name) because the surface includes a `var` (`waiters`) and overload
+// pairs (`wait()`/`wait(timeout:)`).
+extension `Synchronizer.Blocking Tests`.`Edge Case` {
+    /// Extracts the contiguous `///` doc-comment block immediately preceding
+    /// the first line containing `decl` in `source`, lowercased for
+    /// case-insensitive matching. Attribute lines (`@discardableResult`,
+    /// `@inlinable`, ...) between the doc block and the declaration are
+    /// skipped.
+    private static func docComment(precedingDecl decl: Swift.String, in source: Swift.String) -> Swift.String {
+        let lines = source.split(separator: "\n", omittingEmptySubsequences: false)
+        guard let declIndex = lines.firstIndex(where: { $0.contains(decl) }) else {
+            return ""
+        }
+        var docLines: [Substring] = []
+        var i = declIndex - 1
+        while i >= 0 {
+            let trimmed = lines[i].drop(while: { $0 == " " || $0 == "\t" })
+            if trimmed.hasPrefix("///") {
+                docLines.append(trimmed)
+            } else if trimmed.hasPrefix("@") {
+                // attribute between doc block and declaration; keep walking up
+            } else {
+                break
+            }
+            i -= 1
+        }
+        return docLines.reversed().joined(separator: "\n").lowercased()
+    }
+
+    @Test
+    func `Channel lock-required members document the lock precondition`() {
+        let source = Self.readSiblingSource("../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Channel.swift")
+        #expect(!source.isEmpty, "expected to read Synchronizer.Blocking.Channel.swift source for doc-contract check")
+
+        let lockRequired: [Swift.String] = [
+            "public func wait()",
+            "public func wait(timeout",
+            "public var waiters",
+            "public func waitTracked()",
+            "public func waitTracked(timeout",
+            "public func signalIfWaiters",
+            "public func broadcastIfWaiters",
+        ]
+        for decl in lockRequired {
+            let doc = Self.docComment(precedingDecl: decl, in: source)
+            #expect(
+                doc.contains("must be called while holding the lock"),
+                "`\(decl)` is missing the lock-requirement doc contract"
+            )
+        }
+    }
+
+    @Test
+    func `Channel lock-optional members document the lock-optional note`() {
+        let source = Self.readSiblingSource("../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Channel.swift")
+        #expect(!source.isEmpty, "expected to read Synchronizer.Blocking.Channel.swift source for doc-contract check")
+
+        let lockOptional: [Swift.String] = [
+            "public func signal()",
+            "public func broadcast()",
+        ]
+        for decl in lockOptional {
+            let doc = Self.docComment(precedingDecl: decl, in: source)
+            #expect(
+                doc.contains("lock-optional"),
+                "`\(decl)` is missing the lock-optional doc note"
+            )
+        }
+    }
+}
