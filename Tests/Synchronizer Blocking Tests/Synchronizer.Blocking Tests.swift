@@ -341,3 +341,83 @@ extension `Synchronizer.Blocking Tests`.Integration {
         }
     }
 }
+
+// MARK: - Edge Case Tests
+
+extension `Synchronizer.Blocking Tests` {
+    @Suite
+    struct `Edge Case` {}
+}
+
+// F-001 regression coverage: `signalIfWaiters`/`broadcastIfWaiters` read the
+// mutex-protected `waiterCounts` array but historically omitted the "must be
+// called while holding the lock" doc contract that every other accessor of
+// that tracked state (`waiters`, `waitTracked`) states explicitly. Since the
+// fix is a doc-comment addition with no runtime reflection surface, this is a
+// doc-contract regression test: it reads the actual committed source text of
+// `Synchronizer.Blocking.Wait.swift` at test time and asserts the lock
+// precondition is documented on both functions. This genuinely fails before
+// the doc fix lands (the phrase is absent) and passes after (the phrase is
+// present) — a real, mechanically-checkable RED/GREEN, not a reconstruction.
+extension `Synchronizer.Blocking Tests`.`Edge Case` {
+    /// Reads a source file located relative to this test file's own directory.
+    ///
+    /// - Note: Explicitly qualified as `Swift.String` throughout — this module
+    ///   also sees the ecosystem's `~Copyable` `String_Primitives.String`,
+    ///   which shadows the bare `String` identifier and cannot express the
+    ///   ordinary value semantics this file-reading helper needs.
+    private static func readSiblingSource(_ relativePath: Swift.String, from testFile: Swift.String = #filePath) -> Swift.String {
+        let testFileComponents = testFile.split(separator: "/", omittingEmptySubsequences: false)
+        let testFileDirectory = testFileComponents.dropLast().joined(separator: "/")
+        let fullPath = testFileDirectory + "/" + relativePath
+
+        guard let file = unsafe fopen(fullPath, "r") else { return "" }
+        defer { unsafe fclose(file) }
+
+        var bytes: [UInt8] = []
+        var buffer = [UInt8](repeating: 0, count: 4096)
+        while true {
+            let bytesRead = unsafe fread(&buffer, 1, buffer.count, file)
+            guard bytesRead > 0 else { break }
+            bytes.append(contentsOf: buffer[0..<bytesRead])
+        }
+        return Swift.String(decoding: bytes, as: Swift.UTF8.self)
+    }
+
+    /// Extracts the contiguous `///` doc-comment block immediately preceding
+    /// the line declaring `func <name>` in `source`, lowercased for
+    /// case-insensitive matching.
+    private static func docComment(precedingFunc name: Swift.String, in source: Swift.String) -> Swift.String {
+        let lines = source.split(separator: "\n", omittingEmptySubsequences: false)
+        guard let declIndex = lines.firstIndex(where: { $0.contains("func \(name)") }) else {
+            return ""
+        }
+        var docLines: [Substring] = []
+        var i = declIndex - 1
+        while i >= 0 {
+            let trimmed = lines[i].drop(while: { $0 == " " || $0 == "\t" })
+            guard trimmed.hasPrefix("///") else { break }
+            docLines.append(trimmed)
+            i -= 1
+        }
+        return docLines.reversed().joined(separator: "\n").lowercased()
+    }
+
+    @Test
+    func `signalIfWaiters documents the lock precondition`() {
+        let source = Self.readSiblingSource("../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Wait.swift")
+        #expect(!source.isEmpty, "expected to read Synchronizer.Blocking.Wait.swift source for doc-contract check")
+
+        let doc = Self.docComment(precedingFunc: "signalIfWaiters", in: source)
+        #expect(doc.contains("must be called while holding the lock"))
+    }
+
+    @Test
+    func `broadcastIfWaiters documents the lock precondition`() {
+        let source = Self.readSiblingSource("../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Wait.swift")
+        #expect(!source.isEmpty, "expected to read Synchronizer.Blocking.Wait.swift source for doc-contract check")
+
+        let doc = Self.docComment(precedingFunc: "broadcastIfWaiters", in: source)
+        #expect(doc.contains("must be called while holding the lock"))
+    }
+}

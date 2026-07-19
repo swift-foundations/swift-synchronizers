@@ -41,6 +41,10 @@ extension Synchronizer.Blocking {
 
     /// Signal one thread waiting on the specified condition variable.
     ///
+    /// Lock-optional: unlike `signalIfWaiters`/`broadcastIfWaiters`, this operation
+    /// touches no mutex-protected tracked state (it does not read or write
+    /// `waiterCounts`), so it may be called with or without holding the lock.
+    ///
     /// - Parameter condition: Index of condition variable (0..<N).
     /// - Precondition: Index must be in range 0..<N.
     public func signal(condition index: Int = 0) {
@@ -49,6 +53,10 @@ extension Synchronizer.Blocking {
     }
 
     /// Signal all threads waiting on the specified condition variable.
+    ///
+    /// Lock-optional: unlike `signalIfWaiters`/`broadcastIfWaiters`, this operation
+    /// touches no mutex-protected tracked state (it does not read or write
+    /// `waiterCounts`), so it may be called with or without holding the lock.
     ///
     /// - Parameter condition: Index of condition variable (0..<N).
     /// - Precondition: Index must be in range 0..<N.
@@ -62,6 +70,10 @@ extension Synchronizer.Blocking {
     // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
     // TRACKING: swift-synchronizers-deep-audit [API-NAME-002]
     /// Signal all threads waiting on all condition variables.
+    ///
+    /// Lock-optional: like `signal`/`broadcast`, this operation touches no
+    /// mutex-protected tracked state, so it may be called with or without
+    /// holding the lock.
     public func broadcastAll() {
         for i in 0..<N {
             conditions[i].broadcast()
@@ -149,6 +161,7 @@ extension Synchronizer.Blocking {
     // TRACKING: swift-synchronizers-deep-audit [API-NAME-002]
     /// Signal one thread if any are waiting on the specified condition.
     ///
+    /// Must be called while holding the lock.
     /// Skips the signal syscall if no waiters exist.
     ///
     /// - Parameter condition: Index of condition variable (0..<N).
@@ -167,6 +180,7 @@ extension Synchronizer.Blocking {
     // TRACKING: swift-synchronizers-deep-audit [API-NAME-002]
     /// Broadcast to all threads if any are waiting on the specified condition.
     ///
+    /// Must be called while holding the lock.
     /// Skips the broadcast syscall if no waiters exist.
     ///
     /// - Parameter condition: Index of condition variable (0..<N).
