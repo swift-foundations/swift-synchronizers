@@ -16,7 +16,7 @@ import Testing
 // MARK: - Test Suites for Synchronize Witness
 
 extension Synchronize {
-    @Suite("Synchronize Witness")
+    @Suite
     struct Test {}
 }
 

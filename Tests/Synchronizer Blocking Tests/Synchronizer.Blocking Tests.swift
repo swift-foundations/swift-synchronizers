@@ -27,8 +27,8 @@ struct `Synchronizer.Blocking Tests` {}
 // MARK: - Unit Tests
 
 extension `Synchronizer.Blocking Tests` {
-    @Suite("Unit")
-    struct Unit {}
+    @Suite
+    struct `Unit` {}
 }
 
 extension `Synchronizer.Blocking Tests`.Unit {
@@ -89,8 +89,8 @@ extension `Synchronizer.Blocking Tests`.Unit {
 // MARK: - Integration Tests
 
 extension `Synchronizer.Blocking Tests` {
-    @Suite("Integration")
-    struct Integration {}
+    @Suite
+    struct `Integration` {}
 }
 
 /// Small sleep helper using nanosleep
