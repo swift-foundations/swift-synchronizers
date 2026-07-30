@@ -366,7 +366,10 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
     ///   also sees the ecosystem's `~Copyable` `String_Primitives.String`,
     ///   which shadows the bare `String` identifier and cannot express the
     ///   ordinary value semantics this file-reading helper needs.
-    private static func readSiblingSource(_ relativePath: Swift.String, from testFile: Swift.String = #filePath) -> Swift.String {
+    private static func readSiblingSource(
+        _ relativePath: Swift.String,
+        from testFile: Swift.String = #filePath
+    ) -> Swift.String {
         let testFileComponents = testFile.split(separator: "/", omittingEmptySubsequences: false)
         let testFileDirectory = testFileComponents.dropLast().joined(separator: "/")
         let fullPath = testFileDirectory + "/" + relativePath
@@ -387,7 +390,10 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
     /// Extracts the contiguous `///` doc-comment block immediately preceding
     /// the line declaring `func <name>` in `source`, lowercased for
     /// case-insensitive matching.
-    private static func docComment(precedingFunc name: Swift.String, in source: Swift.String) -> Swift.String {
+    private static func docComment(
+        precedingFunc name: Swift.String,
+        in source: Swift.String
+    ) -> Swift.String {
         let lines = source.split(separator: "\n", omittingEmptySubsequences: false)
         guard let declIndex = lines.firstIndex(where: { $0.contains("func \(name)") }) else {
             return ""
@@ -405,8 +411,13 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
 
     @Test
     func `signalIfWaiters documents the lock precondition`() {
-        let source = Self.readSiblingSource("../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Wait.swift")
-        #expect(!source.isEmpty, "expected to read Synchronizer.Blocking.Wait.swift source for doc-contract check")
+        let source = Self.readSiblingSource(
+            "../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Wait.swift"
+        )
+        #expect(
+            !source.isEmpty,
+            "expected to read Synchronizer.Blocking.Wait.swift source for doc-contract check"
+        )
 
         let doc = Self.docComment(precedingFunc: "signalIfWaiters", in: source)
         #expect(doc.contains("must be called while holding the lock"))
@@ -414,8 +425,13 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
 
     @Test
     func `broadcastIfWaiters documents the lock precondition`() {
-        let source = Self.readSiblingSource("../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Wait.swift")
-        #expect(!source.isEmpty, "expected to read Synchronizer.Blocking.Wait.swift source for doc-contract check")
+        let source = Self.readSiblingSource(
+            "../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Wait.swift"
+        )
+        #expect(
+            !source.isEmpty,
+            "expected to read Synchronizer.Blocking.Wait.swift source for doc-contract check"
+        )
 
         let doc = Self.docComment(precedingFunc: "broadcastIfWaiters", in: source)
         #expect(doc.contains("must be called while holding the lock"))
@@ -437,7 +453,10 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
     /// case-insensitive matching. Attribute lines (`@discardableResult`,
     /// `@inlinable`, ...) between the doc block and the declaration are
     /// skipped.
-    private static func docComment(precedingDecl decl: Swift.String, in source: Swift.String) -> Swift.String {
+    private static func docComment(
+        precedingDecl decl: Swift.String,
+        in source: Swift.String
+    ) -> Swift.String {
         let lines = source.split(separator: "\n", omittingEmptySubsequences: false)
         guard let declIndex = lines.firstIndex(where: { $0.contains(decl) }) else {
             return ""
@@ -460,8 +479,13 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
 
     @Test
     func `Channel lock-required members document the lock precondition`() {
-        let source = Self.readSiblingSource("../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Channel.swift")
-        #expect(!source.isEmpty, "expected to read Synchronizer.Blocking.Channel.swift source for doc-contract check")
+        let source = Self.readSiblingSource(
+            "../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Channel.swift"
+        )
+        #expect(
+            !source.isEmpty,
+            "expected to read Synchronizer.Blocking.Channel.swift source for doc-contract check"
+        )
 
         let lockRequired: [Swift.String] = [
             "public func wait()",
@@ -483,8 +507,13 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
 
     @Test
     func `Channel lock-optional members document the lock-optional note`() {
-        let source = Self.readSiblingSource("../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Channel.swift")
-        #expect(!source.isEmpty, "expected to read Synchronizer.Blocking.Channel.swift source for doc-contract check")
+        let source = Self.readSiblingSource(
+            "../../Sources/Synchronizer Blocking/Synchronizer.Blocking.Channel.swift"
+        )
+        #expect(
+            !source.isEmpty,
+            "expected to read Synchronizer.Blocking.Channel.swift source for doc-contract check"
+        )
 
         let lockOptional: [Swift.String] = [
             "public func signal()",
