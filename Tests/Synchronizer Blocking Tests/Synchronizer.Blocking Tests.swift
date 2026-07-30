@@ -130,7 +130,7 @@ extension `Synchronizer.Blocking Tests`.Integration {
         sync.broadcast(condition: 0)
         sync.unlock()
 
-        handle.join()
+        try handle.join()
 
         #expect(count == 1)
     }
@@ -147,7 +147,7 @@ extension `Synchronizer.Blocking Tests`.Integration {
             threadDone.store(true, ordering: .releasing)
         }
 
-        handle.join()
+        try handle.join()
 
         sync.lock()
         let count = sync.waiters(condition: 0)
@@ -180,7 +180,7 @@ extension `Synchronizer.Blocking Tests`.Integration {
         let hadWaiters = sync.signalIfWaiters(condition: 0)
         sync.unlock()
 
-        handle.join()
+        try handle.join()
 
         #expect(hadWaiters == true)
         #expect(waiterWoken.load(ordering: .acquiring) == true)
@@ -225,9 +225,9 @@ extension `Synchronizer.Blocking Tests`.Integration {
         let hadWaiters = sync.broadcastIfWaiters(condition: 0)
         sync.unlock()
 
-        handle1.join()
-        handle2.join()
-        handle3.join()
+        try handle1.join()
+        try handle2.join()
+        try handle3.join()
 
         #expect(count == numWaiters)
         #expect(hadWaiters == true)
@@ -246,7 +246,7 @@ extension `Synchronizer.Blocking Tests`.Integration {
             sync.unlock()
         }
 
-        handle.join()
+        try handle.join()
 
         sync.lock()
         let count = sync.waiters(condition: 0)
@@ -279,7 +279,7 @@ extension `Synchronizer.Blocking Tests`.Integration {
         sync.broadcast(condition: 0)
         sync.unlock()
 
-        handle.join()
+        try handle.join()
 
         #expect(trackedWoken.load(ordering: .acquiring) == true)
     }
@@ -308,7 +308,7 @@ extension `Synchronizer.Blocking Tests`.Integration {
         let hadWaiters = sync.worker.broadcastIfWaiters()
         sync.unlock()
 
-        handle.join()
+        try handle.join()
 
         #expect(count == 1)
         #expect(hadWaiters == true)
