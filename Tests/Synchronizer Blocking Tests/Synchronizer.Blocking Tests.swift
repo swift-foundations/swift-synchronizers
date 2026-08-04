@@ -374,7 +374,13 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
         _ relativePath: Swift.String,
         from testFile: Swift.String = #filePath
     ) -> Swift.String {
-        let testFileComponents = testFile.split(separator: "/", omittingEmptySubsequences: false)
+        // `#filePath` is backslash-separated on Windows and slash-separated
+        // elsewhere, so split on either directory separator rather than
+        // assuming POSIX-style paths.
+        let testFileComponents = testFile.split(
+            omittingEmptySubsequences: false,
+            whereSeparator: { $0 == "/" || $0 == "\\" }
+        )
         let testFileDirectory = testFileComponents.dropLast().joined(separator: "/")
         let fullPath = testFileDirectory + "/" + relativePath
 
