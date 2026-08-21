@@ -1,26 +1,11 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the swift-synchronizers open source project
-//
-// Copyright (c) 2024-2026 Coen ten Thije Boonkkamp and the swift-synchronizers project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE for license information
-//
-// ===----------------------------------------------------------------------===//
-
 import Synchronization
 import Synchronizers_Test_Support
 import Testing
-
-// MARK: - Test Suites for Synchronize Witness
 
 extension Synchronize {
     @Suite
     struct Test {}
 }
-
-// MARK: - Type Erasure Tests
 
 extension Synchronize.Test {
     @Suite
@@ -48,7 +33,7 @@ extension Synchronize.Test.`Type Erasure` {
     func `witness copy shares captured source`() {
         let source = Synchronizer.Blocking<1>()
         let witness = Synchronize(source)
-        let copy = witness  // struct copy — closures share the captured reference
+        let copy = witness
 
         let a = witness.synchronize { 1 }
         let b = copy.synchronize { 2 }

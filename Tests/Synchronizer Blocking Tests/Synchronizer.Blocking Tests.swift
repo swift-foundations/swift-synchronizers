@@ -1,14 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the swift-synchronizers open source project
-//
-// Copyright (c) 2024-2026 Coen ten Thije Boonkkamp and the swift-synchronizers project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE for license information
-//
-// ===----------------------------------------------------------------------===//
-
 import Synchronization
 import Synchronizers_Test_Support
 import Testing
@@ -23,12 +12,8 @@ import Testing
     import ucrt
 #endif
 
-// MARK: - Test Suites for Synchronizer.Blocking Waiter Tracking
-
 @Suite
 struct `Synchronizer.Blocking Tests` {}
-
-// MARK: - Unit Tests
 
 extension `Synchronizer.Blocking Tests` {
     @Suite
@@ -90,14 +75,11 @@ extension `Synchronizer.Blocking Tests`.Unit {
     }
 }
 
-// MARK: - Integration Tests
-
 extension `Synchronizer.Blocking Tests` {
     @Suite
     struct `Integration` {}
 }
 
-/// Small sleep helper using nanosleep
 private func smallSleep(milliseconds: UInt32) {
     #if canImport(Darwin)
         usleep(milliseconds * 1000)
@@ -319,8 +301,6 @@ extension `Synchronizer.Blocking Tests`.Integration {
         #expect(waiterWoken.load(ordering: .acquiring) == true)
     }
 
-    // MARK: - Canonical synchronize(_:) tests
-
     @Test
     func `synchronize executes body under lock`() {
         let sync = Synchronizer.Blocking<1>()
@@ -346,37 +326,18 @@ extension `Synchronizer.Blocking Tests`.Integration {
     }
 }
 
-// MARK: - Edge Case Tests
-
 extension `Synchronizer.Blocking Tests` {
     @Suite
     struct `Edge Case` {}
 }
 
-// F-001 regression coverage: `signalIfWaiters`/`broadcastIfWaiters` read the
-// mutex-protected `waiterCounts` array but historically omitted the "must be
-// called while holding the lock" doc contract that every other accessor of
-// that tracked state (`waiters`, `waitTracked`) states explicitly. Since the
-// fix is a doc-comment addition with no runtime reflection surface, this is a
-// doc-contract regression test: it reads the actual committed source text of
-// `Synchronizer.Blocking.Wait.swift` at test time and asserts the lock
-// precondition is documented on both functions. This genuinely fails before
-// the doc fix lands (the phrase is absent) and passes after (the phrase is
-// present) — a real, mechanically-checkable RED/GREEN, not a reconstruction.
 extension `Synchronizer.Blocking Tests`.`Edge Case` {
-    /// Reads a source file located relative to this test file's own directory.
-    ///
-    /// - Note: Explicitly qualified as `Swift.String` throughout — this module
-    ///   also sees the ecosystem's `~Copyable` `String_Primitives.String`,
-    ///   which shadows the bare `String` identifier and cannot express the
-    ///   ordinary value semantics this file-reading helper needs.
+
     private static func readSiblingSource(
         _ relativePath: Swift.String,
         from testFile: Swift.String = #filePath
     ) -> Swift.String {
-        // `#filePath` is backslash-separated on Windows and slash-separated
-        // elsewhere, so split on either directory separator rather than
-        // assuming POSIX-style paths.
+
         let testFileComponents = testFile.split(
             omittingEmptySubsequences: false,
             whereSeparator: { $0 == "/" || $0 == "\\" }
@@ -397,9 +358,6 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
         return Swift.String(decoding: bytes, as: Swift.UTF8.self)
     }
 
-    /// Extracts the contiguous `///` doc-comment block immediately preceding
-    /// the line declaring `func <name>` in `source`, lowercased for
-    /// case-insensitive matching.
     private static func docComment(
         precedingFunc name: Swift.String,
         in source: Swift.String
@@ -448,21 +406,8 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
     }
 }
 
-// F-001 rev-1 regression coverage: `Synchronizer.Blocking.Channel` (the
-// ergonomic worker/deadline accessor for N == 2) re-exposes the entire F-001
-// surface — `waiters`, `waitTracked` (x2), `signalIfWaiters`,
-// `broadcastIfWaiters`, `wait` (x2) — one level up, and historically carried
-// no lock doc contract anywhere on that surface: the same omission class as
-// F-001 itself. Same doc-contract test shape as above, extended to the
-// Channel source file. Members are located by declaration substring (not bare
-// func name) because the surface includes a `var` (`waiters`) and overload
-// pairs (`wait()`/`wait(timeout:)`).
 extension `Synchronizer.Blocking Tests`.`Edge Case` {
-    /// Extracts the contiguous `///` doc-comment block immediately preceding
-    /// the first line containing `decl` in `source`, lowercased for
-    /// case-insensitive matching. Attribute lines (`@discardableResult`,
-    /// `@inlinable`, ...) between the doc block and the declaration are
-    /// skipped.
+
     private static func docComment(
         precedingDecl decl: Swift.String,
         in source: Swift.String
@@ -478,7 +423,7 @@ extension `Synchronizer.Blocking Tests`.`Edge Case` {
             if trimmed.hasPrefix("///") {
                 docLines.append(trimmed)
             } else if trimmed.hasPrefix("@") {
-                // attribute between doc block and declaration; keep walking up
+
             } else {
                 break
             }

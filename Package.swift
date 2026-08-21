@@ -12,32 +12,31 @@ let package = Package(
         .visionOS(.v27),
     ],
     products: [
-        // MARK: - Namespace
+
         .library(name: "Synchronizer Namespace", targets: ["Synchronizer Namespace"]),
-        // MARK: - Protocol
+
         .library(name: "Synchronizer Protocol", targets: ["Synchronizer Protocol"]),
-        // MARK: - Witness
+
         .library(name: "Synchronize", targets: ["Synchronize"]),
-        // MARK: - Attachable
+
         .library(name: "Synchronizable", targets: ["Synchronizable"]),
-        // MARK: - Variants
+
         .library(name: "Synchronizer Blocking", targets: ["Synchronizer Blocking"]),
-        // MARK: - Umbrella
+
         .library(name: "Synchronizers", targets: ["Synchronizers"]),
-        // MARK: - Test Support
+
         .library(name: "Synchronizers Test Support", targets: ["Synchronizers Test Support"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swift-foundations/swift-kernel.git", branch: "main")
     ],
     targets: [
-        // MARK: - Namespace
+
         .target(
             name: "Synchronizer Namespace",
             dependencies: []
         ),
 
-        // MARK: - Protocol
         .target(
             name: "Synchronizer Protocol",
             dependencies: [
@@ -45,7 +44,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Witness
         .target(
             name: "Synchronize",
             dependencies: [
@@ -53,7 +51,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Attachable
         .target(
             name: "Synchronizable",
             dependencies: [
@@ -61,7 +58,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Variants
         .target(
             name: "Synchronizer Blocking",
             dependencies: [
@@ -70,7 +66,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Umbrella
         .target(
             name: "Synchronizers",
             dependencies: [
@@ -82,7 +77,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Test Support
         .target(
             name: "Synchronizers Test Support",
             dependencies: [
@@ -92,7 +86,6 @@ let package = Package(
             path: "Tests/Support"
         ),
 
-        // MARK: - Tests
         .testTarget(
             name: "Synchronize Tests",
             dependencies: [

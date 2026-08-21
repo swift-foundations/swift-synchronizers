@@ -1,79 +1,25 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the swift-synchronizers open source project
-//
-// Copyright (c) 2024-2026 Coen ten Thije Boonkkamp and the swift-synchronizers project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE for license information
-//
-// ===----------------------------------------------------------------------===//
-
-// MARK: - Condition Variable Operations
-
 extension Synchronizer.Blocking {
-    /// Wait on the specified condition variable.
-    ///
-    /// Must be called while holding the lock.
-    /// The lock is released while waiting and reacquired before returning.
-    ///
-    /// - Parameter condition: Index of condition variable (0..<N).
-    /// - Precondition: Index must be in range 0..<N.
+
     public func wait(condition index: Int = 0) {
         precondition(index >= 0 && index < N, "Condition index \(index) out of bounds (0..<\(N))")
         conditions[index].wait(mutex: mutex)
     }
 
-    /// Wait on the specified condition variable with Duration timeout.
-    ///
-    /// Must be called while holding the lock.
-    /// The lock is released while waiting and reacquired before returning.
-    ///
-    /// - Parameters:
-    ///   - condition: Index of condition variable (0..<N).
-    ///   - timeout: Maximum duration to wait.
-    /// - Returns: `true` if signaled, `false` if timed out.
-    /// - Precondition: Index must be in range 0..<N.
     public func wait(condition index: Int = 0, timeout: Duration) -> Bool {
         precondition(index >= 0 && index < N, "Condition index \(index) out of bounds (0..<\(N))")
         return conditions[index].wait(mutex: mutex, timeout: timeout)
     }
 
-    /// Signal one thread waiting on the specified condition variable.
-    ///
-    /// Lock-optional: unlike `signalIfWaiters`/`broadcastIfWaiters`, this operation
-    /// touches no mutex-protected tracked state (it does not read or write
-    /// `waiterCounts`), so it may be called with or without holding the lock.
-    ///
-    /// - Parameter condition: Index of condition variable (0..<N).
-    /// - Precondition: Index must be in range 0..<N.
     public func signal(condition index: Int = 0) {
         precondition(index >= 0 && index < N, "Condition index \(index) out of bounds (0..<\(N))")
         conditions[index].signal()
     }
 
-    /// Signal all threads waiting on the specified condition variable.
-    ///
-    /// Lock-optional: unlike `signalIfWaiters`/`broadcastIfWaiters`, this operation
-    /// touches no mutex-protected tracked state (it does not read or write
-    /// `waiterCounts`), so it may be called with or without holding the lock.
-    ///
-    /// - Parameter condition: Index of condition variable (0..<N).
-    /// - Precondition: Index must be in range 0..<N.
     public func broadcast(condition index: Int = 0) {
         precondition(index >= 0 && index < N, "Condition index \(index) out of bounds (0..<\(N))")
         conditions[index].broadcast()
     }
 
-    // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
-    // WHY: Property-primitives not yet a dependency of swift-synchronizers
-    // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
-    // TRACKING: swift-synchronizers-deep-audit [API-NAME-002]
-    /// Signal all threads waiting on all condition variables.
-    ///
-    /// Lock-optional: like `signal`/`broadcast`, this operation touches no
-    /// mutex-protected tracked state, so it may be called with or without
-    /// holding the lock.
     public func broadcastAll() {
         for i in 0..<N {
             conditions[i].broadcast()
@@ -81,19 +27,8 @@ extension Synchronizer.Blocking {
     }
 }
 
-// MARK: - Waiter Tracking Operations
-
 extension Synchronizer.Blocking {
-    /// Returns the current waiter count for the specified condition.
-    ///
-    /// Must be called while holding the lock.
-    ///
-    /// - Note: This value is only semantically valid if all waits on this condition
-    ///   use `waitTracked` during the period in which you rely on this count.
-    ///
-    /// - Parameter condition: Index of condition variable (0..<N).
-    /// - Returns: Number of threads currently waiting on this condition.
-    /// - Precondition: Index must be in range 0..<N.
+
     public func waiters(condition: Int = 0) -> Int {
         precondition(
             condition >= 0 && condition < N,
@@ -102,21 +37,6 @@ extension Synchronizer.Blocking {
         return waiterCounts[condition]
     }
 
-    // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
-    // WHY: Property-primitives not yet a dependency of swift-synchronizers
-    // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
-    // TRACKING: swift-synchronizers-deep-audit [API-NAME-002]
-    /// Wait on the specified condition variable while tracking waiter count.
-    ///
-    /// Must be called while holding the lock.
-    /// The lock is released while waiting and reacquired before returning.
-    /// Waiter count is incremented before waiting and decremented after.
-    ///
-    /// - Note: For correct waiter counts, all waits on this condition should use
-    ///   `waitTracked` rather than mixing with `wait`.
-    ///
-    /// - Parameter condition: Index of condition variable (0..<N).
-    /// - Precondition: Index must be in range 0..<N.
     public func waitTracked(condition index: Int = 0) {
         precondition(index >= 0 && index < N, "Condition index \(index) out of bounds (0..<\(N))")
         waiterCounts[index] += 1
@@ -127,24 +47,6 @@ extension Synchronizer.Blocking {
         conditions[index].wait(mutex: mutex)
     }
 
-    // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
-    // WHY: Property-primitives not yet a dependency of swift-synchronizers
-    // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
-    // TRACKING: swift-synchronizers-deep-audit [API-NAME-002]
-    /// Wait on the specified condition variable with timeout while tracking waiter count.
-    ///
-    /// Must be called while holding the lock.
-    /// The lock is released while waiting and reacquired before returning.
-    /// Waiter count is incremented before waiting and decremented after.
-    ///
-    /// - Note: For correct waiter counts, all waits on this condition should use
-    ///   `waitTracked` rather than mixing with `wait`.
-    ///
-    /// - Parameters:
-    ///   - condition: Index of condition variable (0..<N).
-    ///   - timeout: Maximum duration to wait.
-    /// - Returns: `true` if signaled, `false` if timed out.
-    /// - Precondition: Index must be in range 0..<N.
     public func waitTracked(condition index: Int = 0, timeout: Duration) -> Bool {
         precondition(index >= 0 && index < N, "Condition index \(index) out of bounds (0..<\(N))")
         waiterCounts[index] += 1
@@ -155,18 +57,6 @@ extension Synchronizer.Blocking {
         return conditions[index].wait(mutex: mutex, timeout: timeout)
     }
 
-    // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
-    // WHY: Property-primitives not yet a dependency of swift-synchronizers
-    // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
-    // TRACKING: swift-synchronizers-deep-audit [API-NAME-002]
-    /// Signal one thread if any are waiting on the specified condition.
-    ///
-    /// Must be called while holding the lock.
-    /// Skips the signal syscall if no waiters exist.
-    ///
-    /// - Parameter condition: Index of condition variable (0..<N).
-    /// - Returns: `true` if signal was sent (waiters existed), `false` if skipped.
-    /// - Precondition: Index must be in range 0..<N.
     public func signalIfWaiters(condition index: Int = 0) -> Bool {
         precondition(index >= 0 && index < N, "Condition index \(index) out of bounds (0..<\(N))")
         guard waiterCounts[index] > 0 else { return false }
@@ -174,18 +64,6 @@ extension Synchronizer.Blocking {
         return true
     }
 
-    // WORKAROUND: Compound name — needs Property<Tag, Base> accessor pattern
-    // WHY: Property-primitives not yet a dependency of swift-synchronizers
-    // WHEN TO REMOVE: When property-primitives is adopted; refactor to wait.tracked(), signal.conditional(), broadcast.conditional(), broadcast.all()
-    // TRACKING: swift-synchronizers-deep-audit [API-NAME-002]
-    /// Broadcast to all threads if any are waiting on the specified condition.
-    ///
-    /// Must be called while holding the lock.
-    /// Skips the broadcast syscall if no waiters exist.
-    ///
-    /// - Parameter condition: Index of condition variable (0..<N).
-    /// - Returns: `true` if broadcast was sent (waiters existed), `false` if skipped.
-    /// - Precondition: Index must be in range 0..<N.
     public func broadcastIfWaiters(condition index: Int = 0) -> Bool {
         precondition(index >= 0 && index < N, "Condition index \(index) out of bounds (0..<\(N))")
         guard waiterCounts[index] > 0 else { return false }
