@@ -2,7 +2,7 @@
 
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
-Synchronization primitives for Swift. Bundles of mutual exclusion and signaling — variants discriminated by wait mechanism. Layer 3 (Foundations) of the Swift Institute five-layer architecture.
+Synchronization primitives for Swift. Bundles of mutual exclusion and signaling — variants discriminated by wait mechanism. Layer 4 (Compositions) of the Swift Institute four-layer architecture.
 
 The package implements the agent-witness-attachable triple: `Synchronizer` namespace + `Synchronizer.Protocol` (canonical `synchronize(_:)`) + `Synchronize` type-erased witness + `Synchronizable` attachable.
 
@@ -92,7 +92,7 @@ The package is **substrate-layer coordination primitives** — bundles of mutual
 
 | Concern | Belongs in |
 |---|---|
-| Specific async coordination patterns (semaphore, channel, stream) | swift-async-primitives |
+| Specific async coordination patterns (semaphore, channel, stream) | swift-async |
 | Thread-level dispatch (pool, actor, worker) | swift-threads |
 | Thread-level coordination patterns (barrier, gate, semaphore as thread-blocking convenience) | swift-threads |
 | Executor types (Cooperative, Polling) | swift-executors |

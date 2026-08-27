@@ -1,7 +1,7 @@
 # .github/metadata.yaml
 description: "Mutex-and-condvar bundles for mutual exclusion and signaling, discriminated by wait mechanism, for Swift."
 topics:
-  - foundations
+  - compositions
   - synchronization
 homepage: "https://swift-institute.org"
 readme:
